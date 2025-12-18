@@ -1,0 +1,98 @@
+<!DOCTYPE html><html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Test wymiarów kulturowych</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; }
+    h1, h2 { text-align: center; }
+    .question { margin-bottom: 20px; }
+    .scale { display: flex; justify-content: space-between; max-width: 500px; }
+    .scale label { text-align: center; flex: 1; }
+    button { padding: 10px 20px; font-size: 16px; }
+    #results { margin-top: 40px; }
+  </style>
+</head>
+<body><h1>Test wymiarów kulturowych</h1><form id="testForm">  <div class="question">
+    <p>1. Czuję osobistą więź ze swoimi przodkami.</p>
+    <div class="scale">
+      ${[1,2,3,4,5,6,7].map(v => `<label><input type="radio" name="q1" value="${v}" required /><br>${v}</label>`).join('')}
+    </div>
+  </div>  <div class="question">
+    <p>2. Surowe normy społeczne są na ogół sprawą pozytywną dla społeczeństw.</p>
+    <div class="scale">
+      ${[1,2,3,4,5,6,7].map(v => `<label><input type="radio" name="q2" value="${v}" required /><br>${v}</label>`).join('')}
+    </div>
+  </div>  <div class="question">
+    <p>3. Był(a)bym zaniepokojony/zaniepokojona, gdyby osoba z zewnątrz wypowiadała negatywne komentarze na temat mojej grupy.</p>
+    <div class="scale">
+      ${[1,2,3,4,5,6,7].map(v => `<label><input type="radio" name="q3" value="${v}" required /><br>${v}</label>`).join('')}
+    </div>
+  </div>  <div class="question">
+    <p>4. Podwładni i osoby niższe rangą powinny mieć swobodę wypowiadania swojej opinii na temat przywództwa swoich przełożonych, nawet jeśli ich ocena jest negatywna.</p>
+    <div class="scale">
+      ${[1,2,3,4,5,6,7].map(v => `<label><input type="radio" name="q4" value="${v}" required /><br>${v}</label>`).join('')}
+    </div>
+  </div>  <div class="question">
+    <p>5. Próba kontrolowania przyszłości poprzez zasady i wytyczne to wrota do rozczarowania.</p>
+    <div class="scale">
+      ${[1,2,3,4,5,6,7].map(v => `<label><input type="radio" name="q5" value="${v}" required /><br>${v}</label>`).join('')}
+    </div>
+  </div>  <div class="question">
+    <p>6. Dominowanie nad innymi jest ważniejsze niż współpraca.</p>
+    <div class="scale">
+      ${[1,2,3,4,5,6,7].map(v => `<label><input type="radio" name="q6" value="${v}" required /><br>${v}</label>`).join('')}
+    </div>
+  </div>  <div class="question">
+    <p>7. Spójność grupy jest ważniejsza niż odrębność i wyjątkowość pojedynczej osoby.</p>
+    <div class="scale">
+      ${[1,2,3,4,5,6,7].map(v => `<label><input type="radio" name="q7" value="${v}" required /><br>${v}</label>`).join('')}
+    </div>
+  </div>  <div style="text-align:center;">
+    <button type="submit">Pokaż wyniki</button>
+  </div></form><div id="results"></div><script>
+const countries = ["Szwecja", "Arabia Saudyjska", "Chiny", "Japonia", "USA"];
+
+// Mapowanie pytań -> wymiar
+const dimensions = {
+  q1: { name: "Pragmatyzm / Flexhumility", invert: true },
+  q2: { name: "Pobłażliwość", invert: true },
+  q3: { name: "Indywidualizm", invert: true },
+  q4: { name: "Dystans władzy", invert: false },
+  q5: { name: "Unikanie niepewności", invert: true },
+  q6: { name: "Męskość", invert: false },
+  q7: { name: "Indywidualizm", invert: true }
+};
+
+function normalize(value, invert=false) {
+  return invert ? (8 - value) : value;
+}
+
+document.getElementById("testForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const formData = new FormData(this);
+  const scores = {};
+
+  for (const [q, meta] of Object.entries(dimensions)) {
+    const raw = parseInt(formData.get(q));
+    const norm = normalize(raw, meta.invert);
+    if (!scores[meta.name]) scores[meta.name] = [];
+    scores[meta.name].push(norm);
+  }
+
+  let html = "<h2>Twoje wyniki (skala 1–7)</h2>";
+  html += "<ul>";
+  for (const dim in scores) {
+    const avg = scores[dim].reduce((a,b)=>a+b,0) / scores[dim].length;
+    html += `<li><strong>${dim}</strong>: ${avg.toFixed(2)}</li>`;
+  }
+  html += "</ul>";
+
+  html += "<h2>Kraje referencyjne (placeholder)</h2>";
+  html += "<p>Docelowo w tym miejscu można porównać wyniki z profilami kulturowymi krajów:</p>";
+  html += "<ul>" + countries.map(c => `<li>${c}</li>`).join("") + "</ul>";
+
+  document.getElementById("results").innerHTML = html;
+});
+</script></body>
+</html>
