@@ -1,98 +1,512 @@
-<!DOCTYPE html><html lang="pl">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Test wymiarów kulturowych</title>
-  <style>
-    body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; }
-    h1, h2 { text-align: center; }
-    .question { margin-bottom: 20px; }
-    .scale { display: flex; justify-content: space-between; max-width: 500px; }
-    .scale label { text-align: center; flex: 1; }
-    button { padding: 10px 20px; font-size: 16px; }
-    #results { margin-top: 40px; }
-  </style>
-</head>
-<body><h1>Test wymiarów kulturowych</h1><form id="testForm">  <div class="question">
-    <p>1. Czuję osobistą więź ze swoimi przodkami.</p>
-    <div class="scale">
-      ${[1,2,3,4,5,6,7].map(v => `<label><input type="radio" name="q1" value="${v}" required /><br>${v}</label>`).join('')}
-    </div>
-  </div>  <div class="question">
-    <p>2. Surowe normy społeczne są na ogół sprawą pozytywną dla społeczeństw.</p>
-    <div class="scale">
-      ${[1,2,3,4,5,6,7].map(v => `<label><input type="radio" name="q2" value="${v}" required /><br>${v}</label>`).join('')}
-    </div>
-  </div>  <div class="question">
-    <p>3. Był(a)bym zaniepokojony/zaniepokojona, gdyby osoba z zewnątrz wypowiadała negatywne komentarze na temat mojej grupy.</p>
-    <div class="scale">
-      ${[1,2,3,4,5,6,7].map(v => `<label><input type="radio" name="q3" value="${v}" required /><br>${v}</label>`).join('')}
-    </div>
-  </div>  <div class="question">
-    <p>4. Podwładni i osoby niższe rangą powinny mieć swobodę wypowiadania swojej opinii na temat przywództwa swoich przełożonych, nawet jeśli ich ocena jest negatywna.</p>
-    <div class="scale">
-      ${[1,2,3,4,5,6,7].map(v => `<label><input type="radio" name="q4" value="${v}" required /><br>${v}</label>`).join('')}
-    </div>
-  </div>  <div class="question">
-    <p>5. Próba kontrolowania przyszłości poprzez zasady i wytyczne to wrota do rozczarowania.</p>
-    <div class="scale">
-      ${[1,2,3,4,5,6,7].map(v => `<label><input type="radio" name="q5" value="${v}" required /><br>${v}</label>`).join('')}
-    </div>
-  </div>  <div class="question">
-    <p>6. Dominowanie nad innymi jest ważniejsze niż współpraca.</p>
-    <div class="scale">
-      ${[1,2,3,4,5,6,7].map(v => `<label><input type="radio" name="q6" value="${v}" required /><br>${v}</label>`).join('')}
-    </div>
-  </div>  <div class="question">
-    <p>7. Spójność grupy jest ważniejsza niż odrębność i wyjątkowość pojedynczej osoby.</p>
-    <div class="scale">
-      ${[1,2,3,4,5,6,7].map(v => `<label><input type="radio" name="q7" value="${v}" required /><br>${v}</label>`).join('')}
-    </div>
-  </div>  <div style="text-align:center;">
-    <button type="submit">Pokaż wyniki</button>
-  </div></form><div id="results"></div><script>
-const countries = ["Szwecja", "Arabia Saudyjska", "Chiny", "Japonia", "USA"];
+<meta charset="UTF-8">
+<title>Test na wymiary kulturowe (Hofstede)</title>
 
-// Mapowanie pytań -> wymiar
+<style>
+body {
+  font-family: Arial, sans-serif;
+  max-width: 900px;
+  margin: 40px auto;
+}
+h1, h2 {
+  text-align: center;
+}
+.question {
+  margin-bottom: 25px;
+}
+.scale {
+  display: flex;
+  justify-content: space-between;
+  max-width: 500px;
+  margin-top: 8px;
+}
+.scale label {
+  text-align: center;
+  flex: 1;
+  cursor: pointer;
+}
+.scale input {
+  display: block;
+  margin: auto;
+}
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+}
+#results, #dimensionDescriptions {
+  margin-top: 40px;
+}
+#share {
+  margin-top: 30px;
+  text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Test na wymiary kulturowe</h1>
+
+<form id="testForm">
+
+  <!-- Pytania z oryginalnymi treściami -->
+  <div class="question">
+    <p>1. Mój naród jest ... (1 - beznadziejny, 4 - obojętny, 7 - wspaniały)</p>
+    <div class="scale" data-q="q1"></div>
+  </div>
+
+  <div class="question">
+    <p>2. Jestem agresywny/agresywna i bezkompromisowy/bezkompromisowa.</p>
+    <div class="scale" data-q="q2"></div>
+  </div>
+
+  <div class="question">
+    <p>3. Ważne jest, aby zapewnić wszystkim wygodne życie, niezależnie od ich wkładu.</p>
+    <div class="scale" data-q="q3"></div>
+  </div>
+
+  <div class="question">
+    <p>4. Dominowanie nad innymi jest ważniejsze niż współpraca.</p>
+    <div class="scale" data-q="q4"></div>
+  </div>
+
+  <div class="question">
+    <p>5. Przełożeni powinni troszczyć się o swoich podwładnych, którzy w zamian powinni być im posłuszni i lojalni.</p>
+    <div class="scale" data-q="q5"></div>
+  </div>
+
+  <div class="question">
+    <p>6. Nierówności społeczne są nieuniknione. Zawsze znajdą się ludzie, którzy są potężniejsi od innych.</p>
+    <div class="scale" data-q="q6"></div>
+  </div>
+
+  <div class="question">
+    <p>7. Ludzie wpadają na najlepsze i najbardziej wartościowe pomysły w środowiskach, w których pozwala się podejmować luźne i spontaniczne decyzje.</p>
+    <div class="scale" data-q="q7"></div>
+  </div>
+
+  <div class="question">
+    <p>8. Ogólnie lepiej jest postępować bezpiecznie niż podejmować ryzyko i iść w nieznane.</p>
+    <div class="scale" data-q="q8"></div>
+  </div>
+
+  <div class="question">
+    <p>9. Jestem... (1 - przebojowy/przebojowa, 4 - w takim samym stopniu przebojowy/przebojowa, jak i nieprzebojowy/nieprzebojowa, 7 - nieprzebojowy/nieprzebojowa)</p>
+    <div class="scale" data-q="q9"></div>
+  </div>
+
+  <div class="question">
+    <p>10. Planowanie często tłumi kreatywność i innowacyjność.</p>
+    <div class="scale" data-q="q10"></div>
+  </div>
+
+  <div class="question">
+    <p>11. Ludzie mogliby mieć wszystko, czego potrzebują lub chcą, jeśli tylko im na to pozwolimy.</p>
+    <div class="scale" data-q="q11"></div>
+  </div>
+
+  <div class="question">
+    <p>12. Jestem dumny/dumna z własnej rodziny i tradycji lub i też własnego narodu.</p>
+    <div class="scale" data-q="q12"></div>
+  </div>
+
+  <div class="question">
+    <p>13. Od zwolenników powinno się oczekiwać bezwzględnego posłuszeństwa wobec przywódców.</p>
+    <div class="scale" data-q="q13"></div>
+  </div>
+
+  <div class="question">
+    <p>14. Aby być zdolnym, ... (1 - wystarczy urodzić się z talentem, 4 - posiadać talent, jak i wypracować sobie dane umiejętności, 7 - wystarczy wypracować sobie dane umiejętności)</p>
+    <div class="scale" data-q="q14"></div>
+  </div>
+
+  <div class="question">
+    <p>15. Kiedy ja mam poważne spory z kimś w grupie, powiem o sporze... (1 - nikomu, 4 - tylko niektórym członkom grupy, 7 - każdemu, któremu chcę powiedzieć)</p>
+    <div class="scale" data-q="q15"></div>
+  </div>
+
+  <div class="question">
+    <p>16. Spójność grupy jest ważniejsza niż odrębność i wyjątkowość pojedynczej osoby.</p>
+    <div class="scale" data-q="q16"></div>
+  </div>
+
+  <div class="question">
+    <p>17. Dążę do ciągłego doskonalenia swoich wyników.</p>
+    <div class="scale" data-q="q17"></div>
+  </div>
+
+  <div class="question">
+    <p>18. Regularność jest ważniejsza niż eksperymentowanie.</p>
+    <div class="scale" data-q="q18"></div>
+  </div>
+
+  <div class="question">
+    <p>19. Próba kontrolowania przyszłości poprzez zasady i wytyczne to wrota do rozczarowania.</p>
+    <div class="scale" data-q="q19"></div>
+  </div>
+
+  <div class="question">
+    <p>20. Trzymam się religii i/lub zasad uświęconych tradycją.</p>
+    <div class="scale" data-q="q20"></div>
+  </div>
+
+  <div class="question">
+    <p>21. Podwładni i osoby niższe rangą powinny mieć swobodę wypowiadania swojej opinii na temat przywództwa swoich przełożonych, nawet jeśli ich ocena jest negatywna.</p>
+    <div class="scale" data-q="q21"></div>
+  </div>
+
+  <div class="question">
+    <p>22. Cele grupowe moich znajomych lub mojej rodziny są ważniejsze niż cele indywidualne.</p>
+    <div class="scale" data-q="q22"></div>
+  </div>
+
+  <div class="question">
+    <p>23. Dążenie do zniesienia nierówności opartych na pozycji społecznej i klasowej jest niemądre.</p>
+    <div class="scale" data-q="q23"></div>
+  </div>
+
+  <div class="question">
+    <p>24. Jestem... (1 - całkowicie wrażliwy/wrażliwa, 4 - jestem w takim samym stopniu twardy/twarda jak i wrażliwy/wrażliwa, 7 - całkowicie twardy/twarda)</p>
+    <div class="scale" data-q="q24"></div>
+  </div>
+
+  <div class="question">
+    <p>25. Bardzo ważne jest, aby mieć czas na zabawę i relaks.</p>
+    <div class="scale" data-q="q25"></div>
+  </div>
+
+  <div class="question">
+    <p>26. Otrzymywanie przez ludzi tego, czego potrzebują lub chcą w sytuacji, gdy ich wkład nie jest wystarczająco cenny, aby na to pozwolić, nie jest dobre.</p>
+    <div class="scale" data-q="q26"></div>
+  </div>
+
+  <div class="question">
+    <p>27. Przyszłość prawdopodobnie nie będzie się bardzo różnić od przeszłości.</p>
+    <div class="scale" data-q="q27"></div>
+  </div>
+
+  <div class="question">
+    <p>28. Był(a)bym zaniepokojony/zaniepokojona, gdyby osoba z zewnątrz wypowiadała negatywne komentarze na temat mojej grupy.</p>
+    <div class="scale" data-q="q28"></div>
+  </div>
+
+  <div class="question">
+    <p>29. Spójność powinna być ceniona bardziej niż innowacyjność.</p>
+    <div class="scale" data-q="q29"></div>
+  </div>
+
+  <div class="question">
+    <p>30. Jestem bardziej ambitny/ambitna i skuteczny/skuteczna niż empatyczny/empatyczna.</p>
+    <div class="scale" data-q="q30"></div>
+  </div>
+
+  <div class="question">
+    <p>31. Zwolennicy powinni kwestionować swoich przywódców, gdy nie widzą zasadności ich rozkazów.</p>
+    <div class="scale" data-q="q31"></div>
+  </div>
+
+  <div class="question">
+    <p>32. Cele indywidualne są ważniejsze niż cele grupowe moich znajomych lub mojej rodziny.</p>
+    <div class="scale" data-q="q32"></div>
+  </div>
+
+  <div class="question">
+    <p>33. Współzależność jest ważniejsza niż niezależność.</p>
+    <div class="scale" data-q="q33"></div>
+  </div>
+
+  <div class="question">
+    <p>34. Surowe normy społeczne są na ogół sprawą pozytywną dla społeczeństw.</p>
+    <div class="scale" data-q="q34"></div>
+  </div>
+
+  <div class="question">
+    <p>35. Czuję osobistą więź ze swoimi przodkami.</p>
+    <div class="scale" data-q="q35"></div>
+  </div>
+
+  <div class="question">
+    <p>36. Ludzie są zbyt skupieni na posiadaniu wygodnego życia, zamiast zastanawiać się, w jaki sposób mogą się do tego przyczynić.</p>
+    <div class="scale" data-q="q36"></div>
+  </div>
+
+  <div style="text-align:center;">
+    <button type="submit">Pokaż wyniki</button>
+
+</form>
+
+<div id="results"></div>
+<div id="dimensionDescriptions"></div>
+
+<div id="share" style="display:none;">
+<h3>Udostępnij wynik</h3>
+<button onclick="shareFacebook()">Facebook</button>
+<button onclick="shareReddit()">Reddit</button>
+<button onclick="shareNative()">Instagram / TikTok</button>
+<button onclick="copyResult()">Copy text</button>
+</div>
+
+<script>
+/* ===== SCALE GENERATION ===== */
+document.querySelectorAll(".scale").forEach(el => {
+  const q = el.dataset.q;
+  el.innerHTML = [1,2,3,4,5,6,7].map(v => `
+    <label>
+      <input type="radio" name="${q}" value="${v}" required>
+      <br>${v}
+    </label>
+  `).join("");
+});
+
+/* ===== DIMENSIONS ===== */
 const dimensions = {
-  q1: { name: "Pragmatyzm / Flexhumility", invert: true },
-  q2: { name: "Pobłażliwość", invert: true },
-  q3: { name: "Indywidualizm", invert: true },
-  q4: { name: "Dystans władzy", invert: false },
-  q5: { name: "Unikanie niepewności", invert: true },
-  q6: { name: "Męskość", invert: false },
-  q7: { name: "Indywidualizm", invert: true }
+  q1: { name: "Pragmatyzm", invert: true },
+  q2: { name: "Męskość", invert: false },
+  q3: { name: "Pobłażliwość", invert: false },
+  q4: { name: "Męskość", invert: false },
+  q5: { name: "Dystans_władzy", invert: false },
+  q6: { name: "Dystans_władzy", invert: false },
+  q7: { name: "Unikanie_niepewności", invert: true },
+  q8: { name: "Unikanie_niepewności", invert: false },
+  q9: { name: "Męskość", invert: true },
+  q10: { name: "Unikanie_niepewności", invert: true },
+  q11: { name: "Pobłażliwość", invert: false },
+  q12: { name: "Pragmatyzm", invert: true },
+  q13: { name: "Dystans_władzy", invert: false },
+  q14: { name: "Pragmatyzm", invert: false },
+  q15: { name: "Indywidualizm", invert: false },
+  q16: { name: "Indywidualizm", invert: true },
+  q17: { name: "Męskość", invert: false },
+  q18: { name: "Unikanie_niepewności", invert: false },
+  q19: { name: "Unikanie_niepewności", invert: true },
+  q20: { name: "Pragmatyzm", invert: true },
+  q21: { name: "Dystans_władzy", invert: true },
+  q22: { name: "Indywidualizm", invert: true},
+  q23: { name: "Dystans_władzy", invert: false },
+  q24: { name: "Męskość", invert: false },
+  q25: { name: "Pobłażliwość", invert: false },
+  q26: { name: "Pobłażliwość", invert: true },
+  q27: { name: "Pragmatyzm", invert: true },
+  q28: { name: "Indywidualizm", invert: true },
+  q29: { name: "Unikanie_niepewności", invert: false },
+  q30: { name: "Męskość", invert: false },
+  q31: { name: "Dystans_władzy", invert: true },
+  q32: { name: "Indywidualizm", invert: false },
+  q33: { name: "Indywidualizm", invert: true },
+  q34: { name: "Pobłażliwość", invert: true },
+  q35: { name: "Pragmatyzm", invert: true },
+  q36: { name: "Pobłażliwość", invert: true }
 };
 
-function normalize(value, invert=false) {
-  return invert ? (8 - value) : value;
+const hofstedeRanges = {
+  "Dystans_władzy": [2.5, 5.5],
+  "Indywidualizm": [1.5, 4.5],
+  "Męskość": [3, 5],
+  "Unikanie_niepewności": [3, 5],
+  "Pragmatyzm": [1.5, 4.5],
+  "Pobłażliwość": [1.5, 6]
+};
+
+/* ===== COUNTRY DATA ===== */
+const countries = {
+  "Albania": { Dystans_władzy: 90, Indywidualizm: 20, Męskość: 80, Unikanie_niepewności: 70, Pragmatyzm: 56, Pobłażliwość: 15 },
+  "Algieria": { Dystans_władzy: 80, Indywidualizm: 35, Męskość: 35, Unikanie_niepewności: 70, Pragmatyzm: 25, Pobłażliwość: 32 },
+  "Angola": { Dystans_władzy: 83, Indywidualizm: 18, Męskość: 20, Unikanie_niepewności: 60, Pragmatyzm: 15, Pobłażliwość: 83 },
+  "Arabia Saudyjska": { Dystans_władzy: 72, Indywidualizm: 25, Męskość: 43, Unikanie_niepewności: 64, Pragmatyzm: 27, Pobłażliwość: 14 },
+  "Argentyna": { Dystans_władzy: 63, Indywidualizm: 46, Męskość: 56, Unikanie_niepewności: 86, Pragmatyzm: 29, Pobłażliwość: 61 },
+  "Armenia": { Dystans_władzy: 85, Indywidualizm: 22, Męskość: 50, Unikanie_niepewności: 88, Pragmatyzm: 38, Pobłażliwość: 25 },
+  "Australia": { Dystans_władzy: 38, Indywidualizm: 73, Męskość: 61, Unikanie_niepewności: 51, Pragmatyzm: 56, Pobłażliwość: 71 },
+  "Austria": { Dystans_władzy: 11, Indywidualizm: 55, Męskość: 79, Unikanie_niepewności: 70, Pragmatyzm: 60, Pobłażliwość: 63 },
+  "Azerbejdżan": { Dystans_władzy: 85, Indywidualizm: 22, Męskość: 50, Unikanie_niepewności: 88, Pragmatyzm: 59, Pobłażliwość: 22 },
+  "Bangladesz": { Dystans_władzy: 80, Indywidualizm: 5, Męskość: 55, Unikanie_niepewności: 60, Pragmatyzm: 38, Pobłażliwość: 20 },
+  "Belgia": { Dystans_władzy: 65, Indywidualizm: 75, Męskość: 54, Unikanie_niepewności: 94, Pragmatyzm: 82, Pobłażliwość: 57 },
+  "Boliwia": { Dystans_władzy: 78, Indywidualizm: 10, Męskość: 42, Unikanie_niepewności: 87, Pragmatyzm: 21, Pobłażliwość: 46 },
+  "Brazylia": { Dystans_władzy: 69, Indywidualizm: 38, Męskość: 49, Unikanie_niepewności: 76, Pragmatyzm: 28, Pobłażliwość: 59 },
+  "Bułgaria": { Dystans_władzy: 70, Indywidualizm: 30, Męskość: 40, Unikanie_niepewności: 85, Pragmatyzm: 51, Pobłażliwość: 16 },
+  "Burkina Faso": { Dystans_władzy: 80, Indywidualizm: 15, Męskość: 50, Unikanie_niepewności: 65, Pragmatyzm: 27, Pobłażliwość: 18 },
+  "Chile": { Dystans_władzy: 49, Indywidualizm: 23, Męskość: 28, Unikanie_niepewności: 86, Pragmatyzm: 31, Pobłażliwość: 68 },
+  "Chiny": { Dystans_władzy: 80, Indywidualizm: 20, Męskość: 50, Unikanie_niepewności: 69, Pragmatyzm: 87, Pobłażliwość: 24 },
+  "Chorwacja": { Dystans_władzy: 73, Indywidualizm: 33, Męskość: 40, Unikanie_niepewności: 80, Pragmatyzm: 58, Pobłażliwość: 33 },
+  "Czechy": { Dystans_władzy: 57, Indywidualizm: 58, Męskość: 57, Unikanie_niepewności: 74, Pragmatyzm: 70, Pobłażliwość: 29 },
+  "Dania": { Dystans_władzy: 18, Indywidualizm: 87, Męskość: 16, Unikanie_niepewności: 23, Pragmatyzm: 80, Pobłażliwość: 70 },
+  "Dominikana": { Dystans_władzy: 65, Indywidualizm: 30, Męskość: 65, Unikanie_niepewności: 45, Pragmatyzm: 13, Pobłażliwość: 90 },
+  "Egipt": { Dystans_władzy: 80, Indywidualizm: 13, Męskość: 55, Unikanie_niepewności: 55, Pragmatyzm: 22, Pobłażliwość: 0.5 },
+  "Estonia": { Dystans_władzy: 40, Indywidualizm: 60, Męskość: 30, Unikanie_niepewności: 60, Pragmatyzm: 82, Pobłażliwość: 16 },
+  "Etiopia": { Dystans_władzy: 70, Indywidualizm: 7, Męskość: 65, Unikanie_niepewności: 55, Pragmatyzm: 14, Pobłażliwość: 46 },
+  "Filipiny": { Dystans_władzy: 94, Indywidualizm: 32, Męskość: 64, Unikanie_niepewności: 44, Pragmatyzm: 27, Pobłażliwość: 42 },
+  "Finlandia": { Dystans_władzy: 33, Indywidualizm: 75, Męskość: 26, Unikanie_niepewności: 59, Pragmatyzm: 80, Pobłażliwość: 57 },
+  "Francja": { Dystans_władzy: 68, Indywidualizm: 71, Męskość: 43, Unikanie_niepewności: 70, Pragmatyzm: 63, Pobłażliwość: 48 },
+  "Ghana": { Dystans_władzy: 70, Indywidualizm: 15, Męskość: 40, Unikanie_niepewności: 55, Pragmatyzm: 1, Pobłażliwość: 72 },
+  "Grecja": { Dystans_władzy: 60, Indywidualizm: 59, Męskość: 57, Unikanie_niepewności: 100, Pragmatyzm: 51, Pobłażliwość: 50 },
+  "Gruzja": { Dystans_władzy: 65, Indywidualizm: 15, Męskość: 55, Unikanie_niepewności: 85, Pragmatyzm: 24, Pobłażliwość: 32 },
+  "Hiszpania": { Dystans_władzy: 57, Indywidualizm: 51, Męskość: 42, Unikanie_niepewności: 86, Pragmatyzm: 48, Pobłażliwość: 44 },
+  "Holandia": { Dystans_władzy: 38, Indywidualizm: 100, Męskość: 14, Unikanie_niepewności: 53, Pragmatyzm: 67, Pobłażliwość: 68 },
+  "Hongkong": { Dystans_władzy: 68, Indywidualizm: 25, Męskość: 66, Unikanie_niepewności: 29, Pragmatyzm: 93, Pobłażliwość: 17 },
+  "Indie": { Dystans_władzy: 77, Indywidualizm: 26, Męskość: 56, Unikanie_niepewności: 40, Pragmatyzm: 51, Pobłażliwość: 48 },
+  "Indonezja": { Dystans_władzy: 78, Indywidualizm: 14, Męskość: 46, Unikanie_niepewności: 48, Pragmatyzm: 29, Pobłażliwość: 38 },
+  "Irak": { Dystans_władzy: 97, Indywidualizm: 25, Męskość: 53, Unikanie_niepewności: 96, Pragmatyzm: 11, Pobłażliwość: 23 },
+  "Iran": { Dystans_władzy: 80, Indywidualizm: 23, Męskość: 43, Unikanie_niepewności: 70, Pragmatyzm: 30, Pobłażliwość: 14 },
+  "Irlandia": { Dystans_władzy: 35, Indywidualizm: 58, Męskość: 68, Unikanie_niepewności: 35, Pragmatyzm: 24, Pobłażliwość: 65 },
+  "Izrael": { Dystans_władzy: 13, Indywidualizm: 52, Męskość: 47, Unikanie_niepewności: 55, Pragmatyzm: 39, Pobłażliwość: 40 },
+  "Japonia": { Dystans_władzy: 54, Indywidualizm: 46, Męskość: 39, Unikanie_niepewności: 92, Pragmatyzm: 100, Pobłażliwość: 42 },
+  "Jordania": { Dystans_władzy: 70, Indywidualizm: 30, Męskość: 45, Unikanie_niepewności: 65, Pragmatyzm: 20, Pobłażliwość: 43 },
+  "Kanada": { Dystans_władzy: 39, Indywidualizm: 72, Męskość: 52, Unikanie_niepewności: 48, Pragmatyzm: 54, Pobłażliwość: 68 },
+  "Kazachstan": { Dystans_władzy: 88, Indywidualizm: 20, Męskość: 50, Unikanie_niepewności: 88, Pragmatyzm: 58, Pobłażliwość: 22 },
+  "Kolumbia": { Dystans_władzy: 67, Indywidualizm: 13, Męskość: 64, Unikanie_niepewności: 80, Pragmatyzm: 13, Pobłażliwość: 83 },
+  "Korea Południowa": { Dystans_władzy: 60, Indywidualizm: 18, Męskość: 95, Unikanie_niepewności: 85, Pragmatyzm: 88, Pobłażliwość: 29 },
+  "Liban": { Dystans_władzy: 62, Indywidualizm: 27, Męskość: 48, Unikanie_niepewności: 57, Pragmatyzm: 47, Pobłażliwość: 10 },
+  "Litwa": { Dystans_władzy: 42, Indywidualizm: 60, Męskość: 19, Unikanie_niepewności: 65, Pragmatyzm: 82, Pobłażliwość: 16 },
+  "Luksemburg": { Dystans_władzy: 40, Indywidualizm: 60, Męskość: 50, Unikanie_niepewności: 70, Pragmatyzm: 64, Pobłażliwość: 56 },
+  "Łotwa": { Dystans_władzy: 44, Indywidualizm: 70, Męskość: 9, Unikanie_niepewności: 63, Pragmatyzm: 69, Pobłażliwość: 13 },
+  "Malezja": { Dystans_władzy: 100, Indywidualizm: 26, Męskość: 50, Unikanie_niepewności: 36, Pragmatyzm: 41, Pobłażliwość: 57 },
+  "Maroko": { Dystans_władzy: 70, Indywidualizm: 24, Męskość: 53, Unikanie_niepewności: 68, Pragmatyzm: 25, Pobłażliwość: 25 },
+  "Meksyk": { Dystans_władzy: 81, Indywidualizm: 30, Męskość: 69, Unikanie_niepewności: 82, Pragmatyzm: 24, Pobłażliwość: 97 },
+  "Mongolia": { Dystans_władzy: 93, Indywidualizm: 37, Męskość: 29, Unikanie_niepewności: 69, Pragmatyzm: 50, Pobłażliwość: 42 },
+  "Niemcy": { Dystans_władzy: 35, Indywidualizm: 79, Męskość: 66, Unikanie_niepewności: 65, Pragmatyzm: 83, Pobłażliwość: 40 },
+  "Nigeria": { Dystans_władzy: 80, Indywidualizm: 30, Męskość: 60, Unikanie_niepewności: 55, Pragmatyzm: 13, Pobłażliwość: 84 },
+  "Norwegia": { Dystans_władzy: 31, Indywidualizm: 81, Męskość: 8, Unikanie_niepewności: 50, Pragmatyzm: 80, Pobłażliwość: 55 },
+  "Nowa Zelandia": { Dystans_władzy: 22, Indywidualizm: 69, Męskość: 58, Unikanie_niepewności: 49, Pragmatyzm: 55, Pobłażliwość: 75 },
+  "Pakistan": { Dystans_władzy: 55, Indywidualizm: 14, Męskość: 50, Unikanie_niepewności: 59, Pragmatyzm: 19, Pobłażliwość: 0.5 },
+  "Paragwaj": { Dystans_władzy: 70, Indywidualizm: 12, Męskość: 40, Unikanie_niepewności: 85, Pragmatyzm: 20, Pobłażliwość: 56 },
+  "Peru": { Dystans_władzy: 64, Indywidualizm: 16, Męskość: 42, Unikanie_niepewności: 87, Pragmatyzm: 5, Pobłażliwość: 46 },
+  "Polska": { Dystans_władzy: 69, Indywidualizm: 60, Męskość: 64, Unikanie_niepewności: 93, Pragmatyzm: 38, Pobłażliwość: 29 },
+  "Portoryko": { Dystans_władzy: 68, Indywidualizm: 27, Męskość: 56, Unikanie_niepewności: 38, Pragmatyzm: 0, Pobłażliwość: 90 },
+  "Portugalia": { Dystans_władzy: 63, Indywidualizm: 27, Męskość: 31, Unikanie_niepewności: 99, Pragmatyzm: 42, Pobłażliwość: 44 },
+  "Republika Południowej Afryki": { Dystans_władzy: 49, Indywidualizm: 23, Męskość: 63, Unikanie_niepewności: 49, Pragmatyzm: 18, Pobłażliwość: 63 },
+  "Rosja": { Dystans_władzy: 93, Indywidualizm: 43, Męskość: 36, Unikanie_niepewności: 95, Pragmatyzm: 58, Pobłażliwość: 20 },
+  "Rumunia": { Dystans_władzy: 90, Indywidualizm: 30, Męskość: 42, Unikanie_niepewności: 90, Pragmatyzm: 32, Pobłażliwość: 20 },
+  "Salwador": { Dystans_władzy: 66, Indywidualizm: 14, Męskość: 40, Unikanie_niepewności: 94, Pragmatyzm: 20, Pobłażliwość: 89 },
+  "Serbia": { Dystans_władzy: 86, Indywidualizm: 25, Męskość: 43, Unikanie_niepewności: 92, Pragmatyzm: 52, Pobłażliwość: 28 },
+  "Singapur": { Dystans_władzy: 74, Indywidualizm: 20, Męskość: 48, Unikanie_niepewności: 8, Pragmatyzm: 67, Pobłażliwość: 46 },
+  "Słowacja": { Dystans_władzy: 71, Indywidualizm: 52, Męskość: 57, Unikanie_niepewności: 77, Pragmatyzm: 51, Pobłażliwość: 28 },
+  "Słowenia": { Dystans_władzy: 71, Indywidualizm: 27, Męskość: 19, Unikanie_niepewności: 88, Pragmatyzm: 49, Pobłażliwość: 48 },
+  "Szwajcaria": { Dystans_władzy: 34, Indywidualizm: 68, Męskość: 70, Unikanie_niepewności: 58, Pragmatyzm: 74, Pobłażliwość: 66 },
+  "Szwecja": { Dystans_władzy: 31, Indywidualizm: 87, Męskość: 5, Unikanie_niepewności: 29, Pragmatyzm: 80, Pobłażliwość: 78 },
+  "Tajlandia": { Dystans_władzy: 64, Indywidualizm: 20, Męskość: 34, Unikanie_niepewności: 64, Pragmatyzm: 67, Pobłażliwość: 45 },
+  "Tajwan": { Dystans_władzy: 58, Indywidualizm: 17, Męskość: 45, Unikanie_niepewności: 69, Pragmatyzm: 93, Pobłażliwość: 49 },
+  "Tanzania": { Dystans_władzy: 70, Indywidualizm: 25, Męskość: 40, Unikanie_niepewności: 50, Pragmatyzm: 34, Pobłażliwość: 38 },
+  "Turcja": { Dystans_władzy: 66, Indywidualizm: 37, Męskość: 45, Unikanie_niepewności: 85, Pragmatyzm: 35, Pobłażliwość: 49 },
+  "Ukraina": { Dystans_władzy: 65, Indywidualizm: 25, Męskość: 27, Unikanie_niepewności: 95, Pragmatyzm: 51, Pobłażliwość: 14 },
+  "Urugwaj": { Dystans_władzy: 61, Indywidualizm: 36, Męskość: 38, Unikanie_niepewności: 98, Pragmatyzm: 50, Pobłażliwość: 53 },
+  "USA": { Dystans_władzy: 40, Indywidualizm: 62, Męskość: 91, Unikanie_niepewności: 46, Pragmatyzm: 50, Pobłażliwość: 68 },
+  "Węgry": { Dystans_władzy: 71, Indywidualizm: 46, Męskość: 88, Unikanie_niepewności: 82, Pragmatyzm: 45, Pobłażliwość: 31 },
+  "Wielka Brytania": { Dystans_władzy: 35, Indywidualizm: 76, Męskość: 66, Unikanie_niepewności: 35, Pragmatyzm: 51, Pobłażliwość: 69 },
+  "Wenezuela": { Dystans_władzy: 81, Indywidualizm: 12, Męskość: 73, Unikanie_niepewności: 76, Pragmatyzm: 0, Pobłażliwość: 100 },
+  "Wietnam": { Dystans_władzy: 70, Indywidualizm: 20, Męskość: 40, Unikanie_niepewności: 65, Pragmatyzm: 57, Pobłażliwość: 35 },
+  "Włochy": { Dystans_władzy: 75, Indywidualizm: 53, Męskość: 70, Unikanie_niepewności: 75, Pragmatyzm: 50, Pobłażliwość: 74 },
+  "Zambia": { Dystans_władzy: 70, Indywidualizm: 35, Męskość: 40, Unikanie_niepewności: 50, Pragmatyzm: 30, Pobłażliwość: 42 },
+  "Zjednoczone Emiraty Arabskie": { Dystans_władzy: 72, Indywidualizm: 36, Męskość: 52, Unikanie_niepewności: 66, Pragmatyzm: 22, Pobłażliwość: 22 },
+ };
+
+/* ===== DESCRIPTIONS ===== */
+const dimensionDescriptions = {
+  Power_distance: {
+    title: "Dystans władzy",
+    text: "Odnosi się do przekonań dotyczących właściwego podziału władzy w społeczeństwie. Wyraża to, o ile mniej wpływowi członkowie społeczności powinni zaakceptować, że władza jest przydzielona nierówno. Sposób, w jaki społeczeństwo radzi sobie z nierównościami społecznymi, jest głównym problemem w tym wymiarze. Ludzie w cywilizacjach z dużym dystansem władzy akceptują struktury hierarchiczne, w których każdy ma swoje miejsce, i nie jest konieczne dalsze rozumowanie, aby uzasadnić tę hierarchię. Dla porównania, społeczeństwa o niskim poziomie dystansu władzy pracują w celu wyrównania dystrybucji władzy i żądania namacalnych przyczyn nierówności władzy w rządzie ich krajów."
+  },
+  Individualism: {
+    title: "Indywidualizm vs kolektywizm",
+    text: "Wskazuje, w jaki sposób interesy jednostki są ważone w stosunku do interesów społeczności. Luźno związana struktura społeczna, w której oczekuje się, że ludzie będą zwracać uwagę przede wszystkim na siebie i odpowiadać za siebie, oznacza wysoki poziom indywidualizmu. W przeciwieństwie do tego, kultury o niskim poziomie indywidualizmu są dostrojone do grupy i zazwyczaj mają ściśle związaną strukturę społeczną, w której ludzie patrzą na swoich krewnych, rodaków, współpracowników i innych członków swoich społeczności, określając, jaki kierunek działania podejmą."
+  },
+  Masculinity: {
+    title: "Męskość vs kobiecość",
+    text: "Kultury o wysokim poziomie męskości mają tendencję do obracania się wokół sukcesu, rywalizacji i nagród. Natomiast kultury o niskim męskości koncentrują się na wartościach takich jak wychowanie, skromność i empatia. Kultury o wysokiej męskości często wytwarzają bardziej asertywnych i zdecydowanych liderów, podczas gdy kultury o niskiej męskości mają tendencję do wytwarzania bardziej ugodowych, włączających i współczujących liderów."
+  },
+  Uncertainty_avoidance: {
+    title: "Unikanie niepewności",
+    text: "Mierzy, jak dobrze kultura czuje się z niejednoznacznością i niepewnością. Kultury unikania niepewności o wysokiej niepewności wspierają tworzenie większej liczby zasad i struktur (dotyczących prawa, religii i technologii) w odpowiedzi na niepewność. Chcą, aby przyszłość była zapewniona i zaplanowana zgodnie z tym, co sprawdziło się w przeszłości. W przeciwieństwie do tego, kultury unikania niepewności radzą sobie z niepewnością poprzez improwizację i spontaniczne tworzenie rozwiązań."
+  },
+  Pragmatism: {
+    title: "Pragmatyzm vs monumentalizm",
+    text: "Mierzy, jak kultura radzi sobie ze światem zmienia się i jak traktuje tradycję. Kultury pragmatyczne reagują na zmiany pragmatycznie i traktują tradycję w sposób organizacyjny. Natomiast kultury monumentalistyczne wspierają dumę swoich przodków i narodu, a także traktują tradycję w sposób ideologiczny i duchowy."
+  },
+  Indulgence: {
+    title: "Pobłażliwość vs restrykcyjność",
+    text: "Mierzy stopień, w jakim kultury próbują regulować swoje impulsy w kierunku gratyfikacji. Kultury o wysokim poziomie pobłażliwości promują zadowolenie i przyjemności jako wrodzone ludzkie pragnienia związane z czerpaniem przyjemności z życia i zabawy, podczas gdy kultury o nastawieniu restrykcyjnym wyrażają niezadowolenie wobec zaspokajania pragnień i próbują kontrolować przyjemność za pomocą zasad społecznych i tabu."
+
+  }
+};
+
+/* ===== HELPERS ===== */
+function normalize(v, invert){ return invert ? 8 - v : v; }
+
+function toHofstede(v, dim){
+  const [min,max] = hofstedeRanges[dim];
+  if (v < min) return 0;
+  if (v > max) return 100;
+  return Math.round((v-min)/(max-min)*100);
 }
 
-document.getElementById("testForm").addEventListener("submit", function(e) {
+function distance(a,b){
+  let s=0,c=0;
+  for(const k in b){
+    s+=(a[k]-b[k])**2; c++;
+  }
+  return Math.sqrt(s/c);
+}
+
+let shareText = "";
+
+/* ===== MAIN ===== */
+document.getElementById("testForm").addEventListener("submit", e=>{
   e.preventDefault();
 
-  const formData = new FormData(this);
-  const scores = {};
-
-  for (const [q, meta] of Object.entries(dimensions)) {
-    const raw = parseInt(formData.get(q));
-    const norm = normalize(raw, meta.invert);
-    if (!scores[meta.name]) scores[meta.name] = [];
-    scores[meta.name].push(norm);
+  const fd = new FormData(e.target);
+  const raw = {};
+  for(const [q,m] of Object.entries(dimensions)){
+    const v = normalize(+fd.get(q), m.invert);
+    raw[m.name] = (raw[m.name]||[]).concat(v);
   }
 
-  let html = "<h2>Twoje wyniki (skala 1–7)</h2>";
-  html += "<ul>";
-  for (const dim in scores) {
-    const avg = scores[dim].reduce((a,b)=>a+b,0) / scores[dim].length;
-    html += `<li><strong>${dim}</strong>: ${avg.toFixed(2)}</li>`;
+  const user = {};
+  let html="<h2>Twoje wyniki (Hofstede)</h2><ul>";
+  for(const d in raw){
+    const avg = raw[d].reduce((a,b)=>a+b,0)/raw[d].length;
+    user[d]=toHofstede(avg,d);
+    html+=`<li><strong>${d}</strong>: ${user[d]}</li>`;
   }
-  html += "</ul>";
+  html+="</ul>";
 
-  html += "<h2>Kraje referencyjne (placeholder)</h2>";
-  html += "<p>Docelowo w tym miejscu można porównać wyniki z profilami kulturowymi krajów:</p>";
-  html += "<ul>" + countries.map(c => `<li>${c}</li>`).join("") + "</ul>";
+  const matches = Object.entries(countries)
+    .map(([c,p])=>({c,dist:distance(user,p)}))
+    .sort((a,b)=>a.dist-b.dist);
 
-  document.getElementById("results").innerHTML = html;
+  html+=`
+  <h2>Najbliższe kulturowe dopasowanie</h2>
+  <ol>
+    <li>${matches[0].c}</li>
+    <li>${matches[1].c}</li>
+  </ol>`;
+
+  document.getElementById("results").innerHTML=html;
+
+  let dhtml="<h2>Opisy wymiarów kulturowych</h2>";
+  for(const d in dimensionDescriptions){
+    dhtml+=`<h3>${dimensionDescriptions[d].title}</h3><p>${dimensionDescriptions[d].text}</p>`;
+  }
+  document.getElementById("dimensionDescriptions").innerHTML=dhtml;
+
+  shareText=`My cultural profile:\n${JSON.stringify(user,null,2)}\nClosest: ${matches[0].c}, ${matches[1].c}`;
+  document.getElementById("share").style.display="block";
 });
-</script></body>
+
+/* ===== SHARE ===== */
+function shareFacebook(){
+  window.open("https://www.facebook.com/sharer/sharer.php?quote="+encodeURIComponent(shareText));
+}
+function shareReddit(){
+  window.open("https://www.reddit.com/submit?text="+encodeURIComponent(shareText));
+}
+function shareNative(){
+  navigator.share ? navigator.share({text:shareText}) : alert("Twoja przeglądarka nie obsługuje bezpośredniego udostępniania. Skopiuj tekst ręcznie.");
+}
+function copyResult(){
+  navigator.clipboard.writeText(shareText);
+  alert("Wynik skopiowany do schowka.");
+}
+</script>
+
+</body>
 </html>
